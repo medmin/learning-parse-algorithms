@@ -24,4 +24,5 @@ MultiplicativeExpression
 
 PrimaryExpression
     : NUMBER
+    | '(' AdditiveExpression ')'
     ;
