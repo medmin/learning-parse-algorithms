@@ -12,16 +12,16 @@
 
 %%
 
-E
-    : E '+' T
-    | T
+AdditiveExpression
+    : AdditiveExpression '+' MultiplicativeExpression
+    | MultiplicativeExpression
     ;
 
-T
-    : T '*' F
-    | F
+MultiplicativeExpression
+    : MultiplicativeExpression '*' PrimaryExpression
+    | PrimaryExpression
     ;
 
-F
+PrimaryExpression
     : NUMBER
     ;
