@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "syntax-cli": "^0.1.22"
+  },
+  "scripts": {
+    "syntax-cli": "syntax-cli"
+  }
+}
