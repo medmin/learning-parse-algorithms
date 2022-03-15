@@ -9,7 +9,14 @@
 
 \s+     /* skip white space */
 
+// keywords
+
+\bdef\b     return 'DEF'
+\breturn\b  return 'RETURN'
+
+
 \d+     return 'NUMBER'
+\w+     return 'IDENTIFIER'
 
 [+\-]   return 'ADDITIVE_OPERATOR'
 [*/]   return 'MULTIPLICATIVE_OPERATOR'
@@ -66,6 +73,67 @@ Statement
     : ExpressionStatement
     | EmptyStatement
     | BlockStatement
+    | FunctionDeclaration
+    | ReturnStatement
+    ;
+
+FunctionDeclaration
+    : DEF Identifier '(' OptFormalParameterList ')' BlockStatement
+        {
+            $$ = {
+                type: 'FunctionDeclaration',
+                name: $2,
+                params: $4,
+                body: $6
+            }
+        }
+    ;
+
+Identifier
+    : IDENTIFIER
+        {
+            $$ = {
+                type: 'Identifier',
+                value: $1
+            }
+        }
+    ;
+
+OptFormalParameterList
+    : FormalParameterList
+    | /* empty */
+        {
+            $$ = []
+        }
+    ;
+
+FormalParameterList
+    : Identifier
+        { 
+            $$ = [$1]
+        }
+    | FormalParameterList ',' Identifier
+        {
+           $1.push($3); $$ = $1 
+        }
+    ;
+
+ReturnStatement
+    : RETURN OptExpression ';'
+        {
+            $$ = {
+                type: 'ReturnStatement',
+                argument: $2
+            }
+        }
+    ;
+
+OptExpression
+    : Expression
+    | /* empty */
+        {
+            $$ = null
+        }
     ;
 
 BlockStatement
@@ -127,6 +195,7 @@ MultiplicativeExpression
 
 PrimaryExpression
     : Literal
+    | Identifier
     | ParenthesizedExpression
     ;
 
