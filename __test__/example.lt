@@ -19,3 +19,11 @@
     1 * 2;
     1 /2 ;
 }
+
+// empty block
+{}
+
+/**
+* multi-line comment
+*
+*/

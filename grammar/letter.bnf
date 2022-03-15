@@ -2,6 +2,11 @@
 
 %%
 
+\/\/.*  /* skip comment */
+
+\/\*(.|\s)*\*\/ /* skip comment */
+
+
 \s+     /* skip white space */
 
 \d+     return 'NUMBER'
@@ -64,12 +69,20 @@ Statement
     ;
 
 BlockStatement
-    : '{' StatementList '}'
+    : '{' OptStatementList '}'
         {
             $$ = {
                 type: 'BlockStatement',
                 statements: $2
             }
+        }
+    ;
+
+OptStatementList
+    : StatementList
+    | /* empty */
+        {
+            $$ = []
         }
     ;
 
