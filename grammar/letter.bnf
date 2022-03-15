@@ -13,6 +13,27 @@
 /lex
 
 
+// Module inclue
+
+%{
+
+// code included "as is"
+
+function BinaryExpression(left, op, right){ 
+    return {
+        type: 'BinaryExpression',
+        op,
+        left,
+        right
+    };
+}
+
+%}
+
+
+
+// Syntactic grammar
+
 %%
 
 Expression
@@ -22,12 +43,7 @@ Expression
 AdditiveExpression
     : AdditiveExpression ADDITIVE_OPERATOR MultiplicativeExpression 
         { 
-            $$ = {
-                type: 'BinaryExpression',
-                op: $2,
-                left: $1,
-                right: $3
-            }
+            $$ = BinaryExpression($1, $2, $3)
         }
     | MultiplicativeExpression
     ;
@@ -35,12 +51,7 @@ AdditiveExpression
 MultiplicativeExpression
     : MultiplicativeExpression MULTIPLICATIVE_OPERATOR PrimaryExpression
         { 
-            $$ = {
-                type: 'BinaryExpression',
-                op: $2,
-                left: $1,
-                right: $3
-            }
+            $$ = BinaryExpression($1, $2, $3)
         }
     | PrimaryExpression
     ;
@@ -60,7 +71,7 @@ NumericLiteral
             $$ = {
                 type: 'NumericLiteral',
                 value: Number($1)
-            } 
+            }
         }
     ;
 
