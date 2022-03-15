@@ -36,6 +36,62 @@ function BinaryExpression(left, op, right){
 
 %%
 
+Program
+    : StatementList
+        {
+            $$ = {
+                type: 'Program',
+                body: $1
+            }
+        }
+    ;
+
+StatementList
+    : Statement
+        {
+            $$ = [$1]
+        }
+    | StatementList Statement
+        {
+          $1.push($2); $$ = $1
+        }
+    ;
+
+Statement
+    : ExpressionStatement
+    | EmptyStatement
+    | BlockStatement
+    ;
+
+BlockStatement
+    : '{' StatementList '}'
+        {
+            $$ = {
+                type: 'BlockStatement',
+                statements: $2
+            }
+        }
+    ;
+
+ExpressionStatement
+    : Expression ';'
+        { 
+            $$ = {
+                type: 'ExpressionStatement',
+                expression: $1
+            }
+        }
+    ;
+
+EmptyStatement
+    : ';'
+        { 
+            $$ = {
+                type: 'EmptyStatement',
+            }
+        }
+    ;
+
 Expression
     : AdditiveExpression
     ;
