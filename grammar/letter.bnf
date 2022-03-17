@@ -14,7 +14,8 @@
 \bdef\b     return 'DEF'
 \breturn\b  return 'RETURN'
 \bif\b      return 'IF'
-\belse\b      return 'ELSE'
+\belse\b    return 'ELSE'
+\blet\b     return 'LET'
 
 
 \btrue\b      return 'TRUE'
@@ -122,6 +123,51 @@ Statement
     | FunctionDeclaration
     | ReturnStatement
     | IfStatement
+    | VariableStatement
+    ;
+
+
+VariableStatement
+    : LET VariableDeclarationList ';'
+        {
+            $$ = {
+                type: 'VariableStatement',
+                declarations: $2
+            }
+        }
+    ;
+
+
+VariableDeclarationList
+    : VariableDeclaration
+        { $$ = [$1] }
+    | VariableDeclarationList ',' VariableDeclaration
+        {
+            $1.push($3); $$ = $1
+        }
+    ;
+
+VariableDeclaration
+    : Identifier OptVariableInitializer
+        { 
+            $$ = {
+                tye: 'VariableDeclaration',
+                id: $1,
+                init: $2
+            }
+        }
+    ;
+
+
+OptVariableInitializer
+    : VariableInitializer
+    | /* empty */
+         { $$ = null }
+    ;
+
+VariableInitializer
+    : SIMPLE_ASSIGN AssignmentExpression
+        { $$ = $2}
     ;
 
 IfStatement
