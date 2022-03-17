@@ -24,8 +24,16 @@
 \d+     return 'NUMBER'
 \w+     return 'IDENTIFIER'
 
+
+\|\|    return 'LOGICAL_OR'
+\&\&    return 'LOGICAL_AND'
+
 [\=!]\= return 'EQUALITY_OPERATOR'
 [><]\=? return 'RELATIONAL_OPERATOR'
+
+\=       return 'SIMPLE_ASSIGN'
+[*/\+\-]\=     return  'COMPLEX_ASSIGN'
+
 
 [+\-]   return 'ADDITIVE_OPERATOR'
 [*/]   return 'MULTIPLICATIVE_OPERATOR'
@@ -64,6 +72,15 @@ function IfStatement(test, consequent,alternate) {
         consequent,
         alternate
     }
+}
+
+function LogicalExpression(left, operator, right){ 
+    return {
+        type: 'LogicalExpression',
+        operator,
+        left,
+        right
+    };
 }
 
 %}
@@ -210,8 +227,43 @@ EmptyStatement
         }
     ;
 
+
+LeftHandSideExpression
+    : Identifier
+    ;
+
+AssignmentOperator
+    : SIMPLE_ASSIGN
+    | COMPLEX_ASSIGN
+    ;
+
 Expression
+    : AssignmentExpression
+    ;
+
+AssignmentExpression
+    : LogicalORExpression
+    | LeftHandSideExpression AssignmentOperator AssignmentExpression
+        {
+            $$ = {
+                type: 'AssignmentExpression',
+                left: $1,
+                operator: $2,
+                right: $3
+            }
+        }
+    ;
+
+LogicalORExpression
+    : LogicalANDExpression
+    | LogicalORExpression LOGICAL_OR LogicalANDExpression
+        { $$ = LogicalExpression($1, $2, $3) }
+    ;
+
+LogicalANDExpression
     : EqualityExpression
+    | LogicalANDExpression LOGICAL_AND EqualityExpression
+        { $$ = LogicalExpression($1, $2, $3) }
     ;
 
 EqualityExpression
