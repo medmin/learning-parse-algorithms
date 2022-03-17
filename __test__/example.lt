@@ -1,17 +1,14 @@
 
-
-def square(x) {
-    return x * x ;
+def getMagic(x) {
+    if ( x > 1) {
+        return 100;
+    } else {
+        return 200;
+    }
 }
 
-def sum(a,b) {
-    return a + b;
-}
 
-def hello() {
-    return;
-}
+if (true) 
+    if (false) return 100;
+    else  return 200;
 
-def world() {
-
-}
