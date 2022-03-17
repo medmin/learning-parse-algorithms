@@ -84,6 +84,14 @@ function LogicalExpression(left, operator, right){
     };
 }
 
+function UnaryExpression(operator, argument) {
+    return {
+        type: 'UnaryExpression',
+        operator,
+        argument
+    }
+}
+
 %}
 
 
@@ -337,11 +345,19 @@ AdditiveExpression
     ;
 
 MultiplicativeExpression
-    : MultiplicativeExpression MULTIPLICATIVE_OPERATOR PrimaryExpression
+    : MultiplicativeExpression MULTIPLICATIVE_OPERATOR UnaryExpression
         { 
             $$ = BinaryExpression($1, $2, $3)
         }
-    | PrimaryExpression
+    | UnaryExpression
+    ;
+
+UnaryExpression
+    : PrimaryExpression
+    | ADDITIVE_OPERATOR UnaryExpression
+        { 
+            $$ = UnaryExpression($1, $2)
+        }
     ;
 
 PrimaryExpression
