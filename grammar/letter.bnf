@@ -9,6 +9,8 @@
 
 \s+     /* skip white space */
 
+\"[^\"]*\"        return 'STRING'
+
 // keywords
 
 \bdef\b     return 'DEF'
@@ -90,6 +92,14 @@ function UnaryExpression(operator, argument) {
         operator,
         argument
     }
+}
+
+function CallExpression(callee, args) {
+  return {
+    type: 'CallExpression',
+    callee,
+    arguments: args,
+  }
 }
 
 %}
@@ -284,6 +294,7 @@ EmptyStatement
 
 LeftHandSideExpression
     : Identifier
+    | CallExpression
     ;
 
 AssignmentOperator
@@ -354,9 +365,46 @@ MultiplicativeExpression
 
 UnaryExpression
     : PrimaryExpression
+    | CallExpression
     | ADDITIVE_OPERATOR UnaryExpression
         { 
             $$ = UnaryExpression($1, $2)
+        }
+    ;
+
+CallExpression
+    : Callee Arguments
+        {
+            $$ = {
+                type: 'CallExpression',
+                callee: $1,
+                arguments: $2
+            }
+        }
+    ;
+
+Callee
+    : LeftHandSideExpression
+    | CallExpression
+    ;
+
+Arguments
+    : '(' OptArgumentList ')'
+        { $$ = $2 }
+    ;
+
+OptArgumentList
+    : ArgumentList
+    | /* empty */
+        { $$ = [] }
+    ;
+
+ArgumentList
+    : AssignmentExpression
+        { $$ = [$1] }
+    | ArgumentList ',' AssignmentExpression
+        {
+            $1.push($3); $$ = $1
         }
     ;
 
@@ -368,9 +416,14 @@ PrimaryExpression
 
 Literal
     : NumericLiteral
+    | StringLiteral
     | TrueLiteral
     | FalseLiteral
     | NullLiteral
+    ;
+
+StringLiteral
+    : STRING { $$ = Literal('String', $1.slice(1,-1)) }
     ;
 
 TrueLiteral
