@@ -19,6 +19,10 @@
 \belse\b    return 'ELSE'
 \blet\b     return 'LET'
 
+\bwhile\b     return 'WHILE'
+\bdo\b     return 'DO'
+\bfor\b     return 'FOR'
+
 
 \btrue\b      return 'TRUE'
 \bfalse\b      return 'FALSE'
@@ -142,8 +146,23 @@ Statement
     | ReturnStatement
     | IfStatement
     | VariableStatement
+    | IterationStatement
     ;
 
+IterationStatement
+    : WhileStatement
+    ;
+
+WhileStatement
+    : WHILE '(' Expression ')' Statement
+        {
+            $$ = {
+                type: 'WhileStatement',
+                test: $3,
+                body: $5
+            }
+        }
+    ;
 
 VariableStatement
     : LET VariableDeclarationList ';'

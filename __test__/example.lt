@@ -1,1 +1,8 @@
-"ss";
+let s = "asdad ";
+
+// let i = s.length;
+
+while ( i > 0 ) {
+    // console.log(i, s[i]);
+    i -=1;
+}
