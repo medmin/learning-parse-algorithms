@@ -3,6 +3,6 @@
     "syntax-cli": "^0.1.22"
   },
   "scripts": {
-    "parse": "syntax-cli"
+    "syntax": "syntax-cli"
   }
 }
