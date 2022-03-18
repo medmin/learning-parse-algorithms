@@ -19,10 +19,15 @@
 \belse\b    return 'ELSE'
 \blet\b     return 'LET'
 
-\bwhile\b     return 'WHILE'
-\bdo\b     return 'DO'
-\bfor\b     return 'FOR'
+\bwhile\b       return 'WHILE'
+\bdo\b          return 'DO'
+\bfor\b          return 'FOR'
 
+\bclass\b       return 'CLASS'
+\bextends\b     return 'EXTENDS'
+\bsuper\b       return 'SUPER'
+\bnew\b         return 'NEW'
+\bthis\b        return 'THIS'
 
 \btrue\b      return 'TRUE'
 \bfalse\b      return 'FALSE'
@@ -155,6 +160,30 @@ Statement
     | IfStatement
     | VariableStatement
     | IterationStatement
+    | ClassDeclaration
+    ;
+
+ClassDeclaration
+    : CLASS Identifier OptClassExtends Statement
+        {
+            $$ = {
+                type: 'ClassDeclaration',
+                id: $2,
+                superClass: $3,
+                body: $4
+            }
+        }
+    ;
+
+OptClassExtends
+    : ClassExtends
+    | /* empty */
+        { $$ = null }
+    ;
+
+ClassExtends
+    : EXTENDS Identifier 
+        { $$ = $2 }
     ;
 
 IterationStatement
@@ -345,6 +374,7 @@ LeftHandSideExpression
 
 MemberExpression
     : Identifier
+    | ThisExpression
     | MemberExpression '.' Identifier
         {
             $$ = MemberExpression($1, $3)
@@ -352,6 +382,15 @@ MemberExpression
     | MemberExpression '[' Expression ']'
         {
             $$ = MemberExpression($1, $3)
+        }
+    ;
+
+ThisExpression
+    : THIS
+        {
+            $$ = {
+                type: 'ThisExpression'
+            }
         }
     ;
 
@@ -433,10 +472,19 @@ UnaryExpression
 CallExpression
     : Callee Arguments
         {
+            $$ = CallExpression($1, $2)
+        }
+    | Super Arguments
+        {
+            $$ = CallExpression($1, $2)
+        }
+    ;
+
+Super
+    : SUPER
+        {
             $$ = {
-                type: 'CallExpression',
-                callee: $1,
-                arguments: $2
+                type: 'Super'
             }
         }
     ;
@@ -468,8 +516,20 @@ ArgumentList
 
 PrimaryExpression
     : Literal
+    | NewExpression
     | LeftHandSideExpression
     | ParenthesizedExpression
+    ;
+
+NewExpression
+    : NEW MemberExpression Arguments
+        {
+            $$ = {
+                type: 'NewExpression',
+                callee: $2,
+                arguments: $3
+            }
+        }
     ;
 
 Literal
